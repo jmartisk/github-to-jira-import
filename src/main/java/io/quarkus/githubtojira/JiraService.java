@@ -1,14 +1,12 @@
 package io.quarkus.githubtojira;
 
 import com.atlassian.jira.rest.client.api.JiraRestClient;
-import com.atlassian.jira.rest.client.api.JiraRestClientFactory;
 import com.atlassian.jira.rest.client.api.domain.BasicIssue;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInput;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInputBuilder;
 import com.atlassian.jira.rest.client.api.domain.input.TransitionInput;
-import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClient;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
 import io.atlassian.fugue.Iterables;
 import io.quarkus.githubtojira.model.JiraInfo;
@@ -16,7 +14,6 @@ import io.quarkus.logging.Log;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
-import org.codehaus.jettison.json.JSONArray;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.net.URI;
@@ -161,8 +158,8 @@ public class JiraService {
             description = "IGNORE: I'm just testing a new JIRA import app\n\n " + description;
         }
         // the maximum allowed length by Jira is 32767... leave some extra reserve
-        if(description.length() >= 32600) {
-            Log.warn("Truncating the description of PR " +  prUrl + " to 32600 characters " +
+        if (description.length() >= 32600) {
+            Log.warn("Truncating the description of PR " + prUrl + " to 32600 characters " +
                     "because it's too long for Jira (original length: " + description.length() + ")");
             description = description.substring(0, 32600);
         }
