@@ -273,11 +273,16 @@ public class GitHubService {
         for (JsonValue pullRequest : rawList) {
             // get only pull requests, because the query also returns issues
             if (pullRequest.asJsonObject().getJsonObject("content").get("url") != null) {
+                String url = pullRequest.asJsonObject().getJsonObject("content").getString("url");
+                if(pullRequest.asJsonObject().get("STATUS").getValueType().equals(JsonValue.ValueType.NULL)) {
+                    throw new RuntimeException("It appears that pull request " + url + " was added to the project," +
+                                               " but has no status (which is used to deduce the fix version)");
+                }
                 String version = pullRequest.asJsonObject().getJsonObject("STATUS").getString("FIXVERSION", null);
                 // get only pull requests targeting this fix version
                 if (fixVersion.equals(version)) {
                     PullRequestInfo prInfo = new PullRequestInfo();
-                    prInfo.setUrl(pullRequest.asJsonObject().getJsonObject("content").getString("url"));
+                    prInfo.setUrl(url);
                     prInfo.setTitle(pullRequest.asJsonObject().getJsonObject("content").getString("title"));
                     prInfo.setNumber(pullRequest.asJsonObject().getJsonObject("content").getInt("number"));
                     prInfo.setDescription(pullRequest.asJsonObject().getJsonObject("content").getString("bodyText"));
